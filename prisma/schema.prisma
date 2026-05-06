@@ -1,0 +1,288 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Auth & Users ───────────────────────────────────────────
+
+model User {
+  id             String    @id @default(cuid())
+  email          String    @unique
+  name           String?
+  passwordHash   String
+  role           UserRole  @default(OWNER)
+  avatarUrl      String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  businesses     BusinessMember[]
+  sessions       Session[]
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum UserRole {
+  OWNER
+  ADMIN
+  SUPER_ADMIN
+}
+
+// ─── Business ───────────────────────────────────────────────
+
+model Business {
+  id          String   @id @default(cuid())
+  name        String
+  industry    String?
+  size        String?  // "1-10", "11-50", "51-100"
+  location    String?
+  currency    String   @default("USD")
+  planId      String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  plan        PricingPlan?      @relation(fields: [planId], references: [id])
+  members     BusinessMember[]
+  accounts    FinancialAccount[]
+  transactions Transaction[]
+  invoices    Invoice[]
+  posEntries  PosEntry[]
+  budgetGoals BudgetGoal[]
+  crowAlerts  CrowAlert[]
+  crowChats   CrowChat[]
+}
+
+model BusinessMember {
+  id         String         @id @default(cuid())
+  userId     String
+  businessId String
+  role       BusinessRole   @default(MEMBER)
+  createdAt  DateTime       @default(now())
+
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  business   Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, businessId])
+}
+
+enum BusinessRole {
+  OWNER
+  MEMBER
+  VIEWER
+}
+
+// ─── Financial Accounts ─────────────────────────────────────
+
+model FinancialAccount {
+  id             String        @id @default(cuid())
+  businessId     String
+  name           String
+  type           AccountType
+  balance        Float         @default(0)
+  currency       String        @default("USD")
+  institution    String?
+  plaidAccountId String?
+  plaidAccessToken String?
+  isManual       Boolean       @default(true)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  business     Business      @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
+}
+
+enum AccountType {
+  CHECKING
+  SAVINGS
+  CREDIT_CARD
+  CASH
+  OTHER
+}
+
+// ─── Transactions ───────────────────────────────────────────
+
+model Transaction {
+  id             String            @id @default(cuid())
+  businessId     String
+  accountId      String?
+  amount         Float
+  type           TransactionType
+  category       String?
+  description    String?
+  vendor         String?
+  date           DateTime
+  isRecurring    Boolean           @default(false)
+  recurringLabel String?
+  aiCategory     String?
+  aiConfidence   Float?
+  createdAt      DateTime          @default(now())
+
+  business Business          @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  account  FinancialAccount? @relation(fields: [accountId], references: [id], onDelete: SetNull)
+}
+
+enum TransactionType {
+  INCOME
+  EXPENSE
+  TRANSFER
+}
+
+// ─── Invoices ───────────────────────────────────────────────
+
+model Invoice {
+  id           String        @id @default(cuid())
+  businessId   String
+  invoiceNumber String
+  clientName   String
+  clientEmail  String?
+  items        Json          // [{description, quantity, unitPrice, total}]
+  subtotal     Float
+  tax          Float         @default(0)
+  total        Float
+  status       InvoiceStatus @default(DRAFT)
+  dueDate      DateTime
+  sentAt       DateTime?
+  paidAt       DateTime?
+  notes        String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+}
+
+enum InvoiceStatus {
+  DRAFT
+  SENT
+  VIEWED
+  PAID
+  OVERDUE
+  CANCELLED
+}
+
+// ─── POS Entries ────────────────────────────────────────────
+
+model PosEntry {
+  id            String        @id @default(cuid())
+  businessId    String
+  amount        Float
+  category      String?
+  paymentMethod PaymentMethod
+  note          String?
+  createdAt     DateTime      @default(now())
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+}
+
+enum PaymentMethod {
+  CASH
+  CARD
+  MOBILE
+  OTHER
+}
+
+// ─── Budget Goals (Nest Eggs) ───────────────────────────────
+
+model BudgetGoal {
+  id          String   @id @default(cuid())
+  businessId  String
+  name        String
+  targetAmount Float
+  currentAmount Float  @default(0)
+  deadline    DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+}
+
+// ─── AI Crow System ─────────────────────────────────────────
+
+model CrowAlert {
+  id         String    @id @default(cuid())
+  businessId String
+  crowType   CrowType
+  severity   AlertSeverity
+  title      String
+  message    String
+  data       Json?
+  isRead     Boolean   @default(false)
+  isDismissed Boolean  @default(false)
+  createdAt  DateTime  @default(now())
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+}
+
+model CrowChat {
+  id         String   @id @default(cuid())
+  businessId String
+  crowType   CrowType
+  messages   Json     // [{role, content, timestamp}]
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+}
+
+enum CrowType {
+  CASHFLOW
+  EXPENSE
+  REVENUE
+  TAX
+  SCOUT
+}
+
+enum AlertSeverity {
+  INFO
+  WARNING
+  DANGER
+  CRITICAL
+}
+
+// ─── Pricing & Plans ────────────────────────────────────────
+
+model PricingPlan {
+  id                  String   @id @default(cuid())
+  name                String   @unique
+  slug                String   @unique
+  price               Float    @default(0)
+  interval            String   @default("month") // "month" | "year"
+  bankConnections     Int      @default(1)
+  transactionsPerMonth Int     @default(100)
+  invoicesPerMonth    Int      @default(5)
+  posTransactionsPerMonth Int  @default(50)
+  hasCashflowCrow     Boolean  @default(true)
+  cashflowCrowLevel   String   @default("basic") // "basic" | "full" | "advanced"
+  hasExpenseCrow      Boolean  @default(false)
+  hasRevenueCrow      Boolean  @default(false)
+  hasTaxCrow          Boolean  @default(false)
+  hasScoutCrow        Boolean  @default(false)
+  hasMultiBusiness    Boolean  @default(false)
+  hasBranding         Boolean  @default(true)
+  supportLevel        String   @default("community") // "community" | "email" | "priority"
+  isActive            Boolean  @default(true)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  businesses Business[]
+}
+
+// ─── Admin Audit Log ────────────────────────────────────────
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String
+  action    String
+  target    String?
+  details   Json?
+  createdAt DateTime @default(now())
+}
