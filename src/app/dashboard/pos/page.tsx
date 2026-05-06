@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -99,9 +100,9 @@ export default function PosPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <label className="text-sm font-medium mb-1.5 block">
+              <Label className="mb-1.5 block">
                 Amount
-              </label>
+              </Label>
               <div className="relative">
                 <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
@@ -116,9 +117,9 @@ export default function PosPage() {
             </div>
 
             <div>
-              <label className="text-sm font-medium mb-1.5 block">
+              <Label className="mb-1.5 block">
                 Category
-              </label>
+              </Label>
               <Select value={category} onValueChange={setCategory}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select category" />
@@ -133,9 +134,9 @@ export default function PosPage() {
             </div>
 
             <div>
-              <label className="text-sm font-medium mb-1.5 block">
+              <Label className="mb-1.5 block">
                 Payment Method
-              </label>
+              </Label>
               <Select value={paymentMethod} onValueChange={setPaymentMethod}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select method" />
@@ -150,9 +151,9 @@ export default function PosPage() {
             </div>
 
             <div>
-              <label className="text-sm font-medium mb-1.5 block">
+              <Label className="mb-1.5 block">
                 Note (optional)
-              </label>
+              </Label>
               <Input
                 placeholder="Sale description..."
                 value={note}

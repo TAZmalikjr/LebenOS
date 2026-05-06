@@ -6,6 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 
 export default function AdminSettingsPage() {
   return (
@@ -77,16 +79,14 @@ export default function AdminSettingsPage() {
             { name: "Multi-business", description: "Allow multiple businesses per user", enabled: true },
           ].map((flag) => (
             <div key={flag.name} className="flex items-center justify-between py-2 border-b border-border last:border-0">
-              <div>
-                <p className="text-sm font-medium">{flag.name}</p>
+              <div className="space-y-0.5">
+                <Label>{flag.name}</Label>
                 <p className="text-xs text-muted-foreground">{flag.description}</p>
               </div>
-              <Button
-                variant={flag.enabled ? "default" : "outline"}
-                size="sm"
-              >
-                {flag.enabled ? "Enabled" : "Disabled"}
-              </Button>
+              <Switch
+                defaultChecked={flag.enabled}
+                aria-label={`Toggle ${flag.name}`}
+              />
             </div>
           ))}
         </CardContent>

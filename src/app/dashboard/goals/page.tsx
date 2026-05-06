@@ -5,6 +5,7 @@ import { Target, Plus, Egg } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import {
   Dialog,
@@ -90,9 +91,9 @@ export default function GoalsPage() {
             </DialogHeader>
             <div className="space-y-4 py-4">
               <div>
-                <label className="text-sm font-medium mb-1.5 block">
+                <Label className="mb-1.5 block">
                   Goal Name
-                </label>
+                </Label>
                 <Input
                   value={goalName}
                   onChange={(e) => setGoalName(e.target.value)}
@@ -100,9 +101,9 @@ export default function GoalsPage() {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium mb-1.5 block">
+                <Label className="mb-1.5 block">
                   Target Amount
-                </label>
+                </Label>
                 <Input
                   type="number"
                   value={goalTarget}
@@ -111,9 +112,9 @@ export default function GoalsPage() {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium mb-1.5 block">
+                <Label className="mb-1.5 block">
                   Target Date (optional)
-                </label>
+                </Label>
                 <Input
                   type="date"
                   value={goalDeadline}
