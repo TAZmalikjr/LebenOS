@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Scissors, AlertTriangle, TrendingDown, Repeat } from "lucide-react";
+import { Scissors, AlertTriangle, Repeat } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -10,108 +10,83 @@ import { formatCurrency } from "@/lib/utils";
 
 export default function ExpensesPage() {
   const subscriptions = [
-    { name: "Zoom Pro", amount: 14.99, status: "active", usage: "Low", category: "Communication" },
-    { name: "Google Meet Enterprise", amount: 12.0, status: "duplicate", usage: "Medium", category: "Communication" },
-    { name: "Slack Business+", amount: 12.5, status: "active", usage: "High", category: "Communication" },
-    { name: "Adobe Creative Cloud", amount: 54.99, status: "active", usage: "Low", category: "Design" },
-    { name: "Dropbox Business", amount: 15.0, status: "unused", usage: "None", category: "Storage" },
-    { name: "HubSpot CRM", amount: 45.0, status: "active", usage: "High", category: "Sales" },
+    { name: "Zoom Pro", amount: 14.99, status: "active", usage: "Low" },
+    { name: "Google Meet Enterprise", amount: 12.0, status: "duplicate", usage: "Medium" },
+    { name: "Slack Business+", amount: 12.5, status: "active", usage: "High" },
+    { name: "Adobe Creative Cloud", amount: 54.99, status: "active", usage: "Low" },
+    { name: "Dropbox Business", amount: 15.0, status: "unused", usage: "None" },
+    { name: "HubSpot CRM", amount: 45.0, status: "active", usage: "High" },
   ];
 
-  const expenseSpikes = [
-    { category: "Marketing", current: 2400, average: 1200, change: 100 },
-    { category: "Travel", current: 1800, average: 800, change: 125 },
-    { category: "Office Supplies", current: 650, average: 400, change: 62.5 },
+  const spikes = [
+    { category: "Marketing", current: 2400, average: 1200, pct: 100 },
+    { category: "Travel", current: 1800, average: 800, pct: 125 },
+    { category: "Office Supplies", current: 650, average: 400, pct: 63 },
   ];
 
-  const potentialSavings = subscriptions
+  const savings = subscriptions
     .filter((s) => s.status === "duplicate" || s.status === "unused")
-    .reduce((total, s) => total + s.amount * 12, 0);
+    .reduce((t, s) => t + s.amount * 12, 0);
 
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold flex items-center gap-2">
-          <Scissors className="h-6 w-6 text-red-400" />
-          Expense Crow
-        </h2>
-        <p className="text-muted-foreground mt-1">
-          Hunting waste and killing unnecessary subscriptions
-        </p>
+        <h1 className="text-2xl font-semibold tracking-tight">Expenses</h1>
+        <p className="text-sm text-muted-foreground">Waste detection and subscription management</p>
       </div>
 
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid gap-4 md:grid-cols-3">
         <Card>
-          <CardContent className="p-6">
+          <CardContent className="p-5">
             <p className="text-sm text-muted-foreground">Monthly Subscriptions</p>
-            <p className="text-2xl font-bold mt-1">
-              {formatCurrency(subscriptions.reduce((s, sub) => s + sub.amount, 0))}/mo
+            <p className="text-2xl font-semibold mt-1">
+              {formatCurrency(subscriptions.reduce((s, sub) => s + sub.amount, 0))}<span className="text-sm font-normal text-muted-foreground">/mo</span>
             </p>
-            <p className="text-xs text-muted-foreground mt-1">
-              {subscriptions.length} active subscriptions
-            </p>
-          </CardContent>
-        </Card>
-        <Card className="border-crow-warning/30">
-          <CardContent className="p-6">
-            <p className="text-sm text-muted-foreground">Potential Annual Savings</p>
-            <p className="text-2xl font-bold mt-1 text-crow-success">
-              {formatCurrency(potentialSavings)}
-            </p>
-            <p className="text-xs text-crow-warning mt-1">
-              From duplicates & unused tools
-            </p>
+            <p className="text-xs text-muted-foreground mt-1">{subscriptions.length} active</p>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="p-6">
-            <p className="text-sm text-muted-foreground">Expense Anomalies</p>
-            <p className="text-2xl font-bold mt-1">{expenseSpikes.length}</p>
-            <p className="text-xs text-crow-danger mt-1">
-              Categories over budget this month
+          <CardContent className="p-5">
+            <p className="text-sm text-muted-foreground">Potential Annual Savings</p>
+            <p className="text-2xl font-semibold mt-1 text-emerald-600 dark:text-emerald-400">
+              {formatCurrency(savings)}
             </p>
+            <p className="text-xs text-amber-600 dark:text-amber-400 mt-1">From duplicates & unused</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-5">
+            <p className="text-sm text-muted-foreground">Expense Anomalies</p>
+            <p className="text-2xl font-semibold mt-1">{spikes.length}</p>
+            <p className="text-xs text-destructive mt-1">Categories over budget</p>
           </CardContent>
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Subscription Audit */}
+      <div className="grid gap-6 lg:grid-cols-2">
+        {/* Subscriptions */}
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="text-lg flex items-center gap-2">
-              <Repeat className="h-5 w-5" />
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-medium flex items-center gap-2">
+              <Repeat className="h-4 w-4" />
               Subscription Audit
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3">
+          <CardContent className="space-y-1">
             {subscriptions.map((sub, i) => (
-              <div
-                key={i}
-                className="flex items-center justify-between py-2 border-b border-border last:border-0"
-              >
+              <div key={i} className="flex items-center justify-between py-2 border-b last:border-0">
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
                     <p className="text-sm font-medium">{sub.name}</p>
-                    {sub.status === "duplicate" && (
-                      <Badge variant="warning">Duplicate</Badge>
-                    )}
-                    {sub.status === "unused" && (
-                      <Badge variant="danger">Unused</Badge>
-                    )}
+                    {sub.status === "duplicate" && <Badge variant="outline" className="text-amber-600 border-amber-300 text-[10px]">Duplicate</Badge>}
+                    {sub.status === "unused" && <Badge variant="outline" className="text-destructive border-destructive/30 text-[10px]">Unused</Badge>}
                   </div>
-                  <p className="text-xs text-muted-foreground">
-                    {sub.category} &middot; Usage: {sub.usage}
-                  </p>
+                  <p className="text-xs text-muted-foreground">Usage: {sub.usage}</p>
                 </div>
-                <div className="flex items-center gap-3">
-                  <p className="text-sm font-semibold">
-                    {formatCurrency(sub.amount)}/mo
-                  </p>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium">{formatCurrency(sub.amount)}/mo</span>
                   {(sub.status === "duplicate" || sub.status === "unused") && (
-                    <Button variant="outline" size="sm">
-                      Cancel
-                    </Button>
+                    <Button variant="outline" size="sm" className="h-7 text-xs">Cancel</Button>
                   )}
                 </div>
               </div>
@@ -119,34 +94,27 @@ export default function ExpensesPage() {
           </CardContent>
         </Card>
 
-        {/* Expense Spikes */}
+        {/* Spikes */}
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="text-lg flex items-center gap-2">
-              <AlertTriangle className="h-5 w-5 text-crow-warning" />
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-medium flex items-center gap-2">
+              <AlertTriangle className="h-4 w-4 text-amber-500" />
               Expense Spikes
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {expenseSpikes.map((spike, i) => (
+            {spikes.map((spike, i) => (
               <div key={i} className="space-y-2">
                 <div className="flex items-center justify-between">
                   <p className="text-sm font-medium">{spike.category}</p>
-                  <Badge variant="danger">+{spike.change}%</Badge>
+                  <Badge variant="destructive" className="text-[10px]">+{spike.pct}%</Badge>
                 </div>
-                <div className="flex items-center justify-between text-xs text-muted-foreground">
-                  <span>Average: {formatCurrency(spike.average)}</span>
-                  <span className="text-crow-danger font-medium">
-                    Current: {formatCurrency(spike.current)}
-                  </span>
+                <div className="flex justify-between text-xs text-muted-foreground">
+                  <span>Avg: {formatCurrency(spike.average)}</span>
+                  <span className="font-medium text-foreground">Now: {formatCurrency(spike.current)}</span>
                 </div>
-                <div className="h-2 bg-secondary rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-crow-danger rounded-full"
-                    style={{
-                      width: `${Math.min(100, (spike.current / (spike.average * 2)) * 100)}%`,
-                    }}
-                  />
+                <div className="h-1.5 rounded-full bg-secondary overflow-hidden">
+                  <div className="h-full bg-destructive rounded-full" style={{ width: `${Math.min(100, (spike.current / (spike.average * 2)) * 100)}%` }} />
                 </div>
               </div>
             ))}
@@ -154,38 +122,12 @@ export default function ExpensesPage() {
         </Card>
       </div>
 
-      {/* Monthly Waste Report */}
       <Card>
-        <CardHeader>
-          <CardTitle className="text-lg flex items-center gap-2">
-            <TrendingDown className="h-5 w-5 text-crow-success" />
-            Monthly Waste Report
+        <CardHeader className="pb-3">
+          <CardTitle className="text-sm font-medium flex items-center gap-2">
+            <Scissors className="h-4 w-4" />
+            Talk to Expense Crow
           </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="bg-secondary/50 rounded-lg p-4 mb-4">
-            <p className="text-sm">
-              <span className="font-semibold">Expense Crow found {formatCurrency(potentialSavings)}</span> in potential annual savings this month.
-              Here is the breakdown:
-            </p>
-          </div>
-          <ul className="space-y-2 text-sm">
-            <li className="flex items-center justify-between">
-              <span>Duplicate video conferencing tools (Zoom + Google Meet)</span>
-              <span className="font-semibold text-crow-success">Save {formatCurrency(144)}/yr</span>
-            </li>
-            <li className="flex items-center justify-between">
-              <span>Unused Dropbox Business subscription</span>
-              <span className="font-semibold text-crow-success">Save {formatCurrency(180)}/yr</span>
-            </li>
-          </ul>
-        </CardContent>
-      </Card>
-
-      {/* Chat */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Talk to Expense Crow</CardTitle>
         </CardHeader>
         <CardContent>
           <CrowChat crowType="EXPENSE" />

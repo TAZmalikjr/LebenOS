@@ -2,38 +2,27 @@
 
 import React from "react";
 import { BarChart3, Lock } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
 export default function RevenuePage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold flex items-center gap-2">
-          <BarChart3 className="h-6 w-6 text-green-400" />
-          Revenue Crow
-        </h2>
-        <p className="text-muted-foreground mt-1">
-          Growth insights and income trend analysis
-        </p>
+        <h1 className="text-2xl font-semibold tracking-tight">Revenue</h1>
+        <p className="text-sm text-muted-foreground">Growth insights and income analysis</p>
       </div>
 
       <Card className="border-dashed">
         <CardContent className="flex flex-col items-center justify-center py-16 text-center">
-          <div className="h-16 w-16 rounded-full bg-secondary flex items-center justify-center mb-4">
-            <Lock className="h-8 w-8 text-muted-foreground" />
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted mb-4">
+            <Lock className="h-5 w-5 text-muted-foreground" />
           </div>
-          <CardHeader className="p-0">
-            <CardTitle className="text-xl">
-              Revenue Crow is a Pro Feature
-            </CardTitle>
-          </CardHeader>
-          <p className="text-muted-foreground mt-2 max-w-md">
-            Upgrade to the Crow Keeper plan to unlock Revenue Crow. Get insights
-            into your top-performing products, customer segments, and growth
-            opportunities.
+          <h3 className="text-lg font-semibold">Revenue Crow is a Pro feature</h3>
+          <p className="text-sm text-muted-foreground mt-1 max-w-sm">
+            Upgrade to Crow Keeper to unlock revenue analysis, top-performing product insights, and growth recommendations.
           </p>
-          <Button className="mt-6">Upgrade to Crow Keeper</Button>
+          <Button className="mt-4" size="sm">Upgrade to Crow Keeper</Button>
         </CardContent>
       </Card>
     </div>
