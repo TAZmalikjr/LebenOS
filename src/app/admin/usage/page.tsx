@@ -5,91 +5,42 @@ import { Activity, Brain, Database, Zap } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function AdminUsagePage() {
+  const crowUsage = [
+    { name: "Cashflow Crow", queries: 5420, pct: 44 },
+    { name: "Expense Crow", queries: 3210, pct: 26 },
+    { name: "Revenue Crow", queries: 2100, pct: 17 },
+    { name: "Tax Crow", queries: 980, pct: 8 },
+    { name: "Scout Crow", queries: 740, pct: 5 },
+  ];
+
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold flex items-center gap-2">
-          <Activity className="h-6 w-6" />
-          Usage Statistics
-        </h2>
-        <p className="text-muted-foreground mt-1">
-          Monitor platform usage and resource consumption
-        </p>
+      <h1 className="text-2xl font-semibold tracking-tight">Usage</h1>
+      <div className="grid gap-4 md:grid-cols-4">
+        {[
+          { label: "AI Queries Today", value: "847", icon: Brain, sub: "+12% vs yesterday" },
+          { label: "Transactions", value: "3,241", icon: Database, sub: "+8% vs yesterday" },
+          { label: "Plaid API Calls", value: "156", icon: Zap, sub: "Within limits" },
+          { label: "Active Sessions", value: "42", icon: Activity, sub: "Current" },
+        ].map((s) => (
+          <Card key={s.label}>
+            <CardContent className="p-5">
+              <div className="flex items-center gap-2 mb-2"><s.icon className="h-4 w-4 text-muted-foreground" /><span className="text-xs text-muted-foreground">{s.label}</span></div>
+              <p className="text-xl font-semibold">{s.value}</p>
+              <p className="text-xs text-muted-foreground mt-1">{s.sub}</p>
+            </CardContent>
+          </Card>
+        ))}
       </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center gap-3 mb-3">
-              <Brain className="h-5 w-5 text-purple-400" />
-              <p className="text-sm text-muted-foreground">AI Queries Today</p>
-            </div>
-            <p className="text-2xl font-bold">847</p>
-            <p className="text-xs text-crow-success mt-1">+12% vs yesterday</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center gap-3 mb-3">
-              <Database className="h-5 w-5 text-blue-400" />
-              <p className="text-sm text-muted-foreground">Transactions Processed</p>
-            </div>
-            <p className="text-2xl font-bold">3,241</p>
-            <p className="text-xs text-crow-success mt-1">+8% vs yesterday</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center gap-3 mb-3">
-              <Zap className="h-5 w-5 text-yellow-400" />
-              <p className="text-sm text-muted-foreground">API Calls (Plaid)</p>
-            </div>
-            <p className="text-2xl font-bold">156</p>
-            <p className="text-xs text-muted-foreground mt-1">Within limits</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center gap-3 mb-3">
-              <Activity className="h-5 w-5 text-green-400" />
-              <p className="text-sm text-muted-foreground">Active Sessions</p>
-            </div>
-            <p className="text-2xl font-bold">42</p>
-            <p className="text-xs text-muted-foreground mt-1">Current</p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Usage by Crow */}
       <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">AI Crow Usage (Last 30 Days)</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {[
-              { name: "Cashflow Crow", queries: 5420, pct: 44 },
-              { name: "Expense Crow", queries: 3210, pct: 26 },
-              { name: "Revenue Crow", queries: 2100, pct: 17 },
-              { name: "Tax Crow", queries: 980, pct: 8 },
-              { name: "Scout Crow", queries: 740, pct: 5 },
-            ].map((crow) => (
-              <div key={crow.name} className="space-y-1">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="font-medium">{crow.name}</span>
-                  <span className="text-muted-foreground">
-                    {crow.queries.toLocaleString()} queries ({crow.pct}%)
-                  </span>
-                </div>
-                <div className="h-2 bg-secondary rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-primary rounded-full"
-                    style={{ width: `${crow.pct}%` }}
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
+        <CardHeader className="pb-3"><CardTitle className="text-sm font-medium">Crow Usage (30 days)</CardTitle></CardHeader>
+        <CardContent className="space-y-3">
+          {crowUsage.map((c) => (
+            <div key={c.name} className="space-y-1">
+              <div className="flex justify-between text-xs"><span className="font-medium">{c.name}</span><span className="text-muted-foreground">{c.queries.toLocaleString()} ({c.pct}%)</span></div>
+              <div className="h-1.5 rounded-full bg-secondary overflow-hidden"><div className="h-full bg-foreground/20 rounded-full" style={{ width: `${c.pct}%` }} /></div>
+            </div>
+          ))}
         </CardContent>
       </Card>
     </div>

@@ -24,148 +24,76 @@ export function CrowChat({ crowType, initialMessages = [] }: CrowChatProps) {
   const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const endRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    endRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const handleSend = async () => {
+  const send = async () => {
     if (!input.trim() || isLoading) return;
-
-    const userMessage: Message = {
-      role: "user",
-      content: input.trim(),
-      timestamp: new Date().toISOString(),
-    };
-
-    setMessages((prev) => [...prev, userMessage]);
+    const msg: Message = { role: "user", content: input.trim(), timestamp: new Date().toISOString() };
+    setMessages((p) => [...p, msg]);
     setInput("");
     setIsLoading(true);
 
     try {
-      const response = await fetch("/api/crow/chat", {
+      const res = await fetch("/api/crow/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          crowType,
-          message: userMessage.content,
-          history: messages,
-        }),
+        body: JSON.stringify({ crowType, message: msg.content, history: messages }),
       });
-
-      const data = await response.json();
-
-      const assistantMessage: Message = {
-        role: "assistant",
-        content: data.content || "I'm having trouble processing that right now. Please try again.",
-        timestamp: new Date().toISOString(),
-      };
-
-      setMessages((prev) => [...prev, assistantMessage]);
+      const data = await res.json();
+      setMessages((p) => [...p, { role: "assistant", content: data.content || "Try again.", timestamp: new Date().toISOString() }]);
     } catch {
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "assistant",
-          content: "Sorry, I encountered an error. Please try again.",
-          timestamp: new Date().toISOString(),
-        },
-      ]);
+      setMessages((p) => [...p, { role: "assistant", content: "Something went wrong. Please try again.", timestamp: new Date().toISOString() }]);
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="flex flex-col h-[500px] border rounded-lg bg-card">
-      {/* Chat Header */}
-      <div className={cn("flex items-center gap-3 px-4 py-3 border-b", persona.bgColor)}>
-        <div className={cn("h-8 w-8 rounded-full flex items-center justify-center bg-card", persona.color)}>
-          <Bird className="h-4 w-4" />
-        </div>
-        <div>
-          <p className={cn("text-sm font-semibold", persona.color)}>
-            {persona.name}
-          </p>
-          <p className="text-xs text-muted-foreground">{persona.role}</p>
-        </div>
-      </div>
-
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+    <div className="flex flex-col h-[400px] rounded-lg border bg-muted/30">
+      <div className="flex-1 overflow-y-auto p-4 space-y-3">
         {messages.length === 0 && (
           <div className="flex flex-col items-center justify-center h-full text-center">
-            <Bird className={cn("h-12 w-12 mb-3", persona.color)} />
-            <p className="text-sm text-muted-foreground">
-              Start a conversation with {persona.name}
-            </p>
-            <p className="text-xs text-muted-foreground mt-1">
-              Ask about {persona.role.toLowerCase()}
-            </p>
+            <Bird className="h-8 w-8 text-muted-foreground/50 mb-2" />
+            <p className="text-sm text-muted-foreground">Ask {persona.name} anything</p>
+            <p className="text-xs text-muted-foreground mt-0.5">{persona.role}</p>
           </div>
         )}
-
-        {messages.map((msg, i) => (
-          <div
-            key={i}
-            className={cn(
-              "flex gap-3",
-              msg.role === "user" ? "justify-end" : "justify-start"
-            )}
-          >
-            {msg.role === "assistant" && (
-              <div className={cn("h-7 w-7 rounded-full flex items-center justify-center flex-shrink-0", persona.bgColor)}>
-                <Bird className={cn("h-4 w-4", persona.color)} />
+        {messages.map((m, i) => (
+          <div key={i} className={cn("flex gap-2", m.role === "user" ? "justify-end" : "justify-start")}>
+            {m.role === "assistant" && (
+              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-secondary">
+                <Bird className="h-3 w-3" />
               </div>
             )}
-            <div
-              className={cn(
-                "max-w-[80%] rounded-lg px-4 py-2.5 text-sm",
-                msg.role === "user"
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-secondary text-foreground"
-              )}
-            >
-              <p className="whitespace-pre-wrap">{msg.content}</p>
+            <div className={cn("max-w-[80%] rounded-lg px-3 py-2 text-sm", m.role === "user" ? "bg-primary text-primary-foreground" : "bg-secondary")}>
+              <p className="whitespace-pre-wrap text-xs leading-relaxed">{m.content}</p>
             </div>
           </div>
         ))}
-
         {isLoading && (
-          <div className="flex gap-3">
-            <div className={cn("h-7 w-7 rounded-full flex items-center justify-center flex-shrink-0", persona.bgColor)}>
-              <Bird className={cn("h-4 w-4 animate-pulse", persona.color)} />
+          <div className="flex gap-2">
+            <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-secondary">
+              <Bird className="h-3 w-3 animate-pulse" />
             </div>
-            <div className="bg-secondary rounded-lg px-4 py-2.5">
+            <div className="bg-secondary rounded-lg px-3 py-2">
               <div className="flex gap-1">
-                <span className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
-                <span className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
-                <span className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+                <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground animate-bounce" style={{ animationDelay: "0ms" }} />
+                <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground animate-bounce" style={{ animationDelay: "150ms" }} />
+                <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground animate-bounce" style={{ animationDelay: "300ms" }} />
               </div>
             </div>
           </div>
         )}
-
-        <div ref={messagesEndRef} />
+        <div ref={endRef} />
       </div>
-
-      {/* Input */}
-      <div className="flex items-center gap-2 p-4 border-t">
-        <Input
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && handleSend()}
-          placeholder={`Ask ${persona.name}...`}
-          disabled={isLoading}
-          className="flex-1"
-        />
-        <Button
-          onClick={handleSend}
-          disabled={!input.trim() || isLoading}
-          size="icon"
-        >
-          <Send className="h-4 w-4" />
+      <div className="flex items-center gap-2 p-3 border-t">
+        <Input value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => e.key === "Enter" && send()} placeholder={`Ask ${persona.name}...`} disabled={isLoading} className="h-8 text-xs" />
+        <Button onClick={send} disabled={!input.trim() || isLoading} size="icon" className="h-8 w-8 shrink-0">
+          <Send className="h-3.5 w-3.5" />
         </Button>
       </div>
     </div>
