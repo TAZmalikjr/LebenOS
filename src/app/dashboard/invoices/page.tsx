@@ -22,6 +22,7 @@ import {
   DialogFooter,
   DialogDescription,
 } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 import { formatCurrency, generateInvoiceNumber } from "@/lib/utils";
 
 interface Invoice {
@@ -128,15 +129,15 @@ export default function InvoicesPage() {
             </DialogHeader>
             <div className="space-y-4 py-4">
               <div>
-                <label className="text-sm font-medium mb-1.5 block">
+                <Label className="mb-1.5 block">
                   Invoice Number
-                </label>
+                </Label>
                 <Input value={generateInvoiceNumber()} readOnly className="bg-secondary" />
               </div>
               <div>
-                <label className="text-sm font-medium mb-1.5 block">
+                <Label className="mb-1.5 block">
                   Client Name
-                </label>
+                </Label>
                 <Input
                   value={clientName}
                   onChange={(e) => setClientName(e.target.value)}
@@ -144,9 +145,9 @@ export default function InvoicesPage() {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium mb-1.5 block">
+                <Label className="mb-1.5 block">
                   Client Email
-                </label>
+                </Label>
                 <Input
                   type="email"
                   value={clientEmail}
@@ -155,9 +156,9 @@ export default function InvoicesPage() {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium mb-1.5 block">
+                <Label className="mb-1.5 block">
                   Description
-                </label>
+                </Label>
                 <Textarea
                   value={itemDesc}
                   onChange={(e) => setItemDesc(e.target.value)}
@@ -165,9 +166,9 @@ export default function InvoicesPage() {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium mb-1.5 block">
+                <Label className="mb-1.5 block">
                   Amount
-                </label>
+                </Label>
                 <Input
                   type="number"
                   step="0.01"

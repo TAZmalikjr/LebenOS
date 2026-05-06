@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -38,15 +39,15 @@ export default function SettingsPage() {
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="text-sm font-medium mb-1.5 block">
+              <Label className="mb-1.5 block">
                 Business Name
-              </label>
+              </Label>
               <Input defaultValue="Demo Business" />
             </div>
             <div>
-              <label className="text-sm font-medium mb-1.5 block">
+              <Label className="mb-1.5 block">
                 Industry
-              </label>
+              </Label>
               <Select defaultValue="technology">
                 <SelectTrigger>
                   <SelectValue />
@@ -62,9 +63,9 @@ export default function SettingsPage() {
               </Select>
             </div>
             <div>
-              <label className="text-sm font-medium mb-1.5 block">
+              <Label className="mb-1.5 block">
                 Business Size
-              </label>
+              </Label>
               <Select defaultValue="1-10">
                 <SelectTrigger>
                   <SelectValue />
@@ -77,15 +78,15 @@ export default function SettingsPage() {
               </Select>
             </div>
             <div>
-              <label className="text-sm font-medium mb-1.5 block">
+              <Label className="mb-1.5 block">
                 Location
-              </label>
+              </Label>
               <Input defaultValue="Atlanta, GA" />
             </div>
             <div>
-              <label className="text-sm font-medium mb-1.5 block">
+              <Label className="mb-1.5 block">
                 Currency
-              </label>
+              </Label>
               <Select defaultValue="USD">
                 <SelectTrigger>
                   <SelectValue />
