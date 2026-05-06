@@ -1,154 +1,107 @@
-# WalletCrow - Your Wallet's Smartest Flock
+# WalletCrow - Turborepo Monorepo
 
-WalletCrow is an AI-powered financial command center where a "murder" of specialized, personality-driven AI Crows guard, predict, and grow a business's money. It connects to bank accounts, payment processors, and invoicing tools, then deploys intelligent Crows that proactively watch the wallet, scout for opportunities, hunt down waste, and warn of danger before it strikes.
+AI-powered financial command center where specialized AI Crows guard, predict, and grow your business money.
+
+## Architecture
+
+```
+walletcrow/
+  apps/
+    web/          # Marketing website (walletcrow.com)
+    app/          # Dashboard + Super Admin (app.walletcrow.com)
+    accounts/     # Auth pages (accounts.walletcrow.com)
+  packages/
+    ui/           # Shared UI components (shadcn/ui + custom)
+    config/       # Shared Tailwind, PostCSS, domain config
+    supabase/     # Shared Supabase client (browser, server, middleware)
+    types/        # Shared TypeScript types and plan definitions
+```
 
 ## Tech Stack
 
-- **Framework:** Next.js 15 (App Router)
-- **Language:** TypeScript
+- **Monorepo:** Turborepo with npm workspaces
+- **Framework:** Next.js 15 (App Router) x3 apps
+- **Language:** TypeScript (strict mode)
 - **Styling:** Tailwind CSS + shadcn/ui components
-- **Database:** PostgreSQL + Prisma ORM
-- **Auth:** NextAuth.js (Credentials provider)
-- **AI:** DeepSeek API integration
-- **Financial Data:** Plaid API (prepared)
-- **Payments:** Stripe (prepared)
+- **Database:** Supabase (PostgreSQL + Row Level Security)
+- **Auth:** Supabase Auth (Google OAuth + Email/Password)
+- **AI:** DeepSeek API with per-plan rate limiting
+- **Billing:** Stripe Checkout + Customer Portal + Webhooks
+- **Deployment:** Cloudflare Pages
 
-## MVP Features
+## Features (Alpha)
 
-### The Wallet Nest Dashboard
-- At-a-glance financial health visualization
-- Central nest graphic showing total liquid assets
-- Crow status indicators around the rim
-- Health states: healthy (golden), caution (warning), danger (red)
+### Authentication (accounts.walletcrow.com)
+- Sign in with Google (OAuth)
+- Sign in with Email/Password
+- Sign up with email confirmation
+- Password reset flow
+- Auto-redirect between subdomains
+- Secure middleware-based session management
 
-### AI Crow System
-- **Cashflow Crow** - Forecasting, cash runway, bill tracking, overdue invoice alerts
-- **Expense Crow** - Subscription auditing, waste detection, expense spike analysis
-- **Revenue Crow** - Growth insights (Pro feature, gated)
-- **Tax Crow** - Tax preparation (The Murder plan)
-- **Scout Crow** - External intelligence (The Murder plan)
+### Dashboard (app.walletcrow.com)
+- Wallet Nest dashboard with financial overview
+- Cashflow Crow with AI chat (rate limited)
+- Expense Crow and Revenue Crow (plan-gated)
+- Lightweight POS module
+- Invoice management
+- Nest Egg budget goals
+- Business settings with plan management
+- Stripe-powered billing (checkout + portal)
 
-Each Crow has a distinct personality, visual identity, and conversational AI interface powered by DeepSeek.
+### Super Admin (app.walletcrow.com/superadmin)
+- Platform-wide stats (businesses, users, AI queries)
+- Business management table
+- Access restricted to SUPER_ADMIN_EMAILS
 
-### Lightweight POS Module
-- Quick sales entry with amount, category, payment method
-- Today's sales summary
-- Feeds directly into Revenue Crow analysis
+### Marketing (walletcrow.com)
+- Full landing page with hero, features, pricing, security sections
+- SEO-optimized metadata
+- Conversion-focused copy and CTAs
 
-### Smart Invoicing
-- Create, send, and track branded invoices
-- Status tracking (Draft, Sent, Paid, Overdue)
-- Cashflow Crow integration for overdue alerts
+## Security
 
-### Budget Goals ("Nest Eggs")
-- Set financial goals with target amounts and deadlines
-- Visual progress tracking with golden egg metaphor
-- Auto-alerts when goals go off track
-
-### Super Admin Dashboard
-- Platform-wide business management
-- Usage statistics and AI query monitoring
-- Pricing plan management with feature flags
-- Business impersonation for support
-
-### Pricing Plans
-| Feature | Sparrow (Free) | Crow Keeper ($29/mo) | The Murder ($79/mo) |
-|---------|----------------|---------------------|---------------------|
-| Bank connections | 1 | Unlimited | Unlimited |
-| Transactions/month | 100 | Unlimited | Unlimited |
-| Cashflow Crow | Basic | Full | Full + What-if |
-| Expense Crow | - | Full | Full |
-| Revenue Crow | - | Full | Full |
-| Tax Crow | - | - | Full |
-| Scout Crow | - | - | Full |
-| Multi-business | - | - | Yes |
-
-## Project Structure
-
-```
-src/
-  app/
-    page.tsx              # Landing page
-    login/page.tsx        # Authentication
-    dashboard/
-      layout.tsx          # Dashboard shell with sidebar
-      page.tsx            # Wallet Nest home
-      cashflow/page.tsx   # Cashflow Crow module
-      expenses/page.tsx   # Expense Crow module
-      revenue/page.tsx    # Revenue Crow (gated)
-      invoices/page.tsx   # Invoice management
-      pos/page.tsx        # Point of Sale
-      goals/page.tsx      # Nest Eggs / Budget Goals
-      settings/page.tsx   # Business settings
-    admin/
-      layout.tsx          # Admin shell
-      page.tsx            # Admin overview
-      businesses/page.tsx # Business management
-      plans/page.tsx      # Plan management
-      usage/page.tsx      # Usage statistics
-      settings/page.tsx   # Platform settings
-    api/
-      auth/               # NextAuth + registration
-      crow/chat/          # AI Crow chat endpoint
-  components/
-    ui/                   # shadcn/ui components
-    layout/               # Sidebar, Header
-    nest/                 # Nest visualization
-    crow/                 # Crow chat, alert cards
-  lib/
-    ai.ts                 # DeepSeek API integration
-    auth.ts               # NextAuth configuration
-    crows.ts              # Crow personas and prompts
-    db.ts                 # Prisma client
-    feature-gate.ts       # Plan-based feature gating
-    utils.ts              # Shared utilities
-  types/
-    index.ts              # TypeScript type definitions
-prisma/
-  schema.prisma           # Database schema
-```
+- Supabase Row Level Security on all tables
+- Middleware auth checks on all protected routes
+- Super admin access controlled by email whitelist
+- AI rate limiting per plan (10/100/500 queries/day)
+- Stripe webhook signature verification
+- Secure cross-subdomain session management
 
 ## Getting Started
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/TAZmalikjr/LebenOS.git
-   cd LebenOS
-   ```
+```bash
+# Install dependencies
+npm install
 
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
+# Set up environment variables
+cp .env.example .env
+# Edit .env with your Supabase, Stripe, and DeepSeek credentials
 
-3. **Set up environment variables**
-   ```bash
-   cp .env.example .env
-   # Edit .env with your database URL and API keys
-   ```
+# Run the Supabase migration
+# Copy packages/supabase/migrations/init.sql into Supabase SQL Editor
 
-4. **Set up the database**
-   ```bash
-   npx prisma generate
-   npx prisma db push
-   ```
-
-5. **Run the development server**
-   ```bash
-   npm run dev
-   ```
-
-6. **Open** [http://localhost:3000](http://localhost:3000)
+# Run all apps
+npx turbo dev
+```
 
 ## Environment Variables
 
-See `.env.example` for required configuration:
-- `DATABASE_URL` - PostgreSQL connection string
-- `NEXTAUTH_SECRET` - Session encryption key
-- `DEEPSEEK_API_KEY` - AI Crow intelligence
-- `PLAID_CLIENT_ID` / `PLAID_SECRET` - Bank connections
-- `STRIPE_SECRET_KEY` - Payment processing
+See `.env.example` for all required variables.
 
-## License
+## Pricing Plans
 
-Private - All rights reserved.
+| Feature | Sparrow (Free) | Crow Keeper ($29/mo) | The Murder ($79/mo) |
+|---------|----------------|---------------------|---------------------|
+| Cashflow Crow | Basic | Full | Full + What-if |
+| Expense Crow | -- | Full | Full |
+| Revenue Crow | -- | Full | Full |
+| Tax Crow | -- | -- | Full |
+| Scout Crow | -- | -- | Full |
+| AI Queries/Day | 10 | 100 | 500 |
+| Transactions | 100/mo | Unlimited | Unlimited |
+| Multi-business | -- | -- | Yes |
+
+## Design Guide
+
+See `design-guide.md` for the complete visual language, component patterns, and UX principles.
